@@ -56,6 +56,7 @@ def analyze_cv_with_groq(images):
     chat_completion = groq_client.chat.completions.create(
         messages=messages,
         model="llama-3.2-90b-vision-preview",
+        temperature = 0.1
         #response_format={"type": "json_object"},
     )
     
@@ -136,7 +137,7 @@ def job_listings():
 @app.route('/api/job-listings')
 def api_job_listings():
     job_ids = get_job_ids()
-    limited_job_ids = job_ids[:10]  # Limit to the first 10 job IDs
+    limited_job_ids = job_ids[:2] 
     job_details = [get_job_details(job_id) for job_id in limited_job_ids]
 
     return jsonify(job_details)
