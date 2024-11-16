@@ -1,15 +1,10 @@
 import requests
 import json
-import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
 
 url = "https://api.coresignal.com/cdapi/v1/professional_network/job/search/filter"
 headers = {
     'Content-Type': 'application/json',
-    'Authorization': f"Bearer {os.getenv('BEARER_TOKEN')}"
+    'Authorization': 'Bearer eyJhbGciOiJFZERTQSIsImtpZCI6ImMxYzBjNTY3LWU3YjAtZTJiNS04MGY5LWMyNzE1MjQ1OTlkMCJ9.eyJhdWQiOiJ1Y2wiLCJleHAiOjE3NjAzODIwMjgsImlhdCI6MTcyODgyNTA3NiwiaXNzIjoiaHR0cHM6Ly9vcHMuY29yZXNpZ25hbC5jb206ODMwMC92MS9pZGVudGl0eS9vaWRjIiwibmFtZXNwYWNlIjoicm9vdCIsInByZWZlcnJlZF91c2VybmFtZSI6InVjbCIsInN1YiI6ImZhMGM0YzljLWMyMWMtZmZkZi1jMGI5LTQ4YWVkNWFmOWMxNiIsInVzZXJpbmZvIjp7InNjb3BlcyI6ImNkYXBpIn19.IiCJVTJTCr9BQ3_C1jkNpJ3mkBDOLWt4qr5pumVp_RmtXcuRzdRoaVqQ2L-tQtAoKnznox-v4qUMqo_thn3_CA'
 }
 
 def get_job_ids():
@@ -22,32 +17,10 @@ def get_job_ids():
     })
     
     response = requests.request("POST", url, headers=headers, data=payload)
-    
-    # Debugging information
-    print("Response Status Code:", response.status_code)
-    print("Response Text:", response.text)
-    
-    try:
-        job_ids = response.json()
-    except json.JSONDecodeError:
-        print("Error decoding JSON response:")
-        print(response.text)
-        return []
+    job_ids = json.loads(response.text)
     return job_ids
 
 def get_job_details(job_id):
     url = f"https://api.coresignal.com/cdapi/v1/professional_network/job/collect/{job_id}"
     response = requests.request("GET", url, headers=headers)
-    try:
-        return response.json()
-    except json.JSONDecodeError:
-        print("Error decoding JSON response:")
-        print(response.text)
-        return {}
-
-# Example usage
-job_ids = get_job_ids()
-if job_ids:
-    print(get_job_details(job_ids[0]))
-else:
-    print("No job IDs found.")
+    return json.loads(response.text)

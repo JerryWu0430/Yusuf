@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.job-listings {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.job-listing {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.job-listing h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.job-listing p {
+    margin: 0.5rem 0;
+}
+
+@media (min-width: 768px) {
+    .job-listings {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 1024px) {
+    .job-listings {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}

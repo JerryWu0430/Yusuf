@@ -7,6 +7,7 @@ import base64
 from groq import Groq
 import fitz
 import uuid
+from JobAPI import get_job_ids, get_job_details
 
 load_dotenv() 
 
@@ -41,7 +42,7 @@ def analyze_cv_with_groq(images):
         messages.append({
             "role": "user",
             "content": [
-                {"type": "text", "text": "Please analyze this CV page and provide a professional summary."},
+                {"type": "text", "text": "Please analyze this CV page and provide a professional summary. "},
                 {
                     "type": "image_url",
                     "image_url": {
@@ -49,11 +50,13 @@ def analyze_cv_with_groq(images):
                     },
                 },
             ],
+            
         })
 
     chat_completion = groq_client.chat.completions.create(
         messages=messages,
         model="llama-3.2-90b-vision-preview",
+        #response_format={"type": "json_object"},
     )
     
     return chat_completion.choices[0].message.content
@@ -125,6 +128,18 @@ def cleanup():
         if os.path.exists(image_path):
             os.remove(image_path)
     return '', 204
+
+@app.route('/job-listings')
+def job_listings():
+    return render_template('listing.html')
+
+@app.route('/api/job-listings')
+def api_job_listings():
+    job_ids = get_job_ids()
+    limited_job_ids = job_ids[:10]  # Limit to the first 10 job IDs
+    job_details = [get_job_details(job_id) for job_id in limited_job_ids]
+
+    return jsonify(job_details)
 
 if __name__ == '__main__':
     app.run(debug=True)

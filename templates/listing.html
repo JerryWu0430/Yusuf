@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Listings</title>
+    <link rel="stylesheet" href="/static/listing.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Job Listings</h1>
+        <div class="job-listings" id="job-listings">
+            <!-- Job listings will be dynamically inserted here -->
+        </div>
+    </div>
+    <script>
+        async function fetchJobListings() {
+            const response = await fetch('/api/job-listings');
+            const data = await response.json();
+            const jobListingsContainer = document.getElementById('job-listings');
+            jobListingsContainer.innerHTML = '';
+
+            data.forEach(job => {
+                const jobElement = document.createElement('div');
+                jobElement.classList.add('job-listing');
+                jobElement.innerHTML = `
+                    <h2>${job.title}</h2>
+                    <p><strong>Location:</strong> ${job.location}</p>
+                    <p><strong>Industry:</strong> ${job.industry}</p>
+                    <p><strong>Employment Type:</strong> ${job.employment_type}</p>
+                    <p>${job.description}</p>
+                `;
+                jobListingsContainer.appendChild(jobElement);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchJobListings);
+    </script>
+</body>
+</html>
