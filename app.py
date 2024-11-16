@@ -25,10 +25,10 @@ for folder in [UPLOAD_FOLDER, TEMP_FOLDER]:
 
 def pdf_to_images(pdf_path):
     """Convert PDF to list of base64 encoded images"""
-    doc = fitz.open(pdf_path)
+    doc = fitz.Document(pdf_path)
     images = []
     for page in doc:
-        pix = page.get_pixmap(matrix=fitz.Matrix(0.3, 0.3))
+        pix = page.get_pixmap()  # Use default scaling factor for original quality
         img_data = pix.tobytes()
         img_base64 = base64.b64encode(img_data).decode()
         images.append(img_base64)
