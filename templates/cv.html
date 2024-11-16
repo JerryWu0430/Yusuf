@@ -12,8 +12,12 @@
         <div class="grid-container">
             <!-- Left side: CV Display -->
             <div class="cv-container">
-                <div class="cv-placeholder">
-                    <span>CV</span>
+                <div class="cv-display" id="cv-display">
+                    {% if cv_image %}
+                        <img src="data:image/jpeg;base64,{{ cv_image }}" alt="CV">
+                    {% else %}
+                        <span>No CV uploaded</span>
+                    {% endif %}
                 </div>
             </div>
 
@@ -22,6 +26,13 @@
                 <div class="card">
                     <div class="card-header">
                         <h2>CV Summary</h2>
+                    </div>
+                    <div class="card-content" id="summary-content">
+                        {% if summary %}
+                            {{ summary | safe }}
+                        {% else %}
+                            <p class="placeholder-text">No summary available</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
