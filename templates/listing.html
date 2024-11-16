@@ -8,33 +8,28 @@
 </head>
 <body>
     <div class="container">
-        <h1>Job Listings</h1>
-        <div class="job-listings" id="job-listings">
-            <!-- Job listings will be dynamically inserted here -->
+        <a href="/cv" class="back-link">← Back to CV</a>
+        <h1>Recommended Jobs</h1>
+        
+        <div class="job-layout">
+            <!-- Left column: Job list -->
+            <div class="job-list">
+                <div id="job-listings">
+                    <!-- Job cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Right column: Job details -->
+            <div class="job-details-panel">
+                <div id="job-details" class="job-details-content">
+                    <div class="initial-message">
+                        <h2>Select a job to view details</h2>
+                        <p>Click on a job from the list to view its details</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <script>
-        async function fetchJobListings() {
-            const response = await fetch('/api/job-listings');
-            const data = await response.json();
-            const jobListingsContainer = document.getElementById('job-listings');
-            jobListingsContainer.innerHTML = '';
-
-            data.forEach(job => {
-                const jobElement = document.createElement('div');
-                jobElement.classList.add('job-listing');
-                jobElement.innerHTML = `
-                    <h2>${job.title}</h2>
-                    <p><strong>Location:</strong> ${job.location}</p>
-                    <p><strong>Industry:</strong> ${job.industry}</p>
-                    <p><strong>Employment Type:</strong> ${job.employment_type}</p>
-                    <p>${job.description}</p>
-                `;
-                jobListingsContainer.appendChild(jobElement);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', fetchJobListings);
-    </script>
+    <script src="/static/listing.js"></script>
 </body>
 </html>

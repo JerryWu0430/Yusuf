@@ -156,3 +156,25 @@ ul {
         grid-template-columns: 1fr;
     }
 }
+
+.card-footer {
+    padding: 20px;
+    text-align: right;
+    border-top: 1px solid #eee;
+    margin-top: auto;  /* This pushes the footer to the bottom */
+}
+
+.view-jobs-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #0066cc;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.view-jobs-button:hover {
+    background-color: #0052a3;
+}

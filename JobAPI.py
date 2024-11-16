@@ -16,7 +16,7 @@ def get_job_ids():
     payload = json.dumps({
         "employment_type": "Internship OR Part-time OR Contract",
         "industry": "(Information Technology & Services) OR Telecommunications OR Internet OR Accounting OR Nanotechnology OR (Computer Hardware) OR (Computer Software) OR (Computer & Network Security) OR (Information Services) OR (Computer Networking) OR (Computer Games)",
-        "country": "(United Kingdom) OR Italy",
+        "country": "(United Kingdom)",
         "application_active": "True",
         "deleted": "False"
     })
