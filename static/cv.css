@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(to bottom, #e8f2ff, #ffffff);
+    background-color: #f8f9fa;
 }
 
 .container {
