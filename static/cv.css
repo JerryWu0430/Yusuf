@@ -76,11 +76,13 @@ h1 {
 
 .card-content p {
     margin-bottom: 1em;
+    text-indent: 2em; /* Indent the first line of each paragraph */
 }
 
 .card-content ul {
     list-style-type: disc;
-    padding-left: 20px;
+    padding-left: 2em; /* Indent the list items */
+    margin-bottom: 1rem;
 }
 
 .card-content li {

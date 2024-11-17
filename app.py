@@ -8,6 +8,7 @@ from groq import Groq
 import fitz
 import uuid
 from JobAPI import get_job_ids, get_job_details
+import re
 
 load_dotenv() 
 
@@ -42,7 +43,23 @@ def analyze_cv_with_groq(images):
         messages.append({
             "role": "user",
             "content": [
-                {"type": "text", "text": "Please analyze this CV page and provide a professional summary. "},
+                {"type": "text", "text": """
+                 
+            Please analyze this CV page and provide a professional summary with the following structure Format the output with simple headings and indentation, without any asterisks or special characters:
+
+            Professional Summary:
+                {Background and overview}
+
+            Key Strengths:
+                {Top skills and attributes}
+                
+            Career Path:
+                {Career trajectory analysis}
+                
+            Conclusion:
+                {Final assessment}
+                 
+                 """},
                 {
                     "type": "image_url",
                     "image_url": {
@@ -56,11 +73,21 @@ def analyze_cv_with_groq(images):
     chat_completion = groq_client.chat.completions.create(
         messages=messages,
         model="llama-3.2-90b-vision-preview",
-        temperature = 0.1
+        temperature = 1
         #response_format={"type": "json_object"},
     )
     
-    return chat_completion.choices[0].message.content
+    summary = chat_completion.choices[0].message.content
+    
+    # Convert the summary to HTML format
+    summary_html = summary.replace("**Professional Summary:**", "<h3>Professional Summary:</h3><p>")
+    summary_html = summary_html.replace("**Key Strengths:**", "</p><h3>Key Strengths:</h3><ul>")
+    summary_html = summary_html.replace("**Career Path:**", "</ul><h3>Career Path:</h3><p>")
+    summary_html = summary_html.replace("**Conclusion:**", "</p><h3>Conclusion:</h3><p>")
+    summary_html = summary_html.replace("* ", "<li>").replace("*", "</li>")
+    summary_html += "</p>"
+
+    return summary_html
 
 @app.route('/')
 def index():
@@ -102,6 +129,7 @@ def upload_pdf():
             images = pdf_to_images(temp_path)
             
             summary = analyze_cv_with_groq(images)
+            #summary = analyze_cv_with_groq(images)
             
             image_path = os.path.join(TEMP_FOLDER, f"{upload_id}.txt")
             with open(image_path, 'w') as f:
