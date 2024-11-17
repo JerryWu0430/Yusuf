@@ -19,7 +19,7 @@ h1 {
 
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr; /* Adjusted to make the CV summary box wider */
     gap: 2rem;
     height: calc(100vh - 200px);
 }
@@ -27,6 +27,9 @@ h1 {
 /* CV Placeholder Styles */
 .cv-container {
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .cv-placeholder {
@@ -91,6 +94,12 @@ h1 {
 
 .card-content b {
     font-weight: bold;
+}
+
+.card-content h3 {
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.2em; /* Reduced margin-bottom to make spacing smaller */
 }
 
 /* Summary Content Styles */

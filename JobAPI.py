@@ -12,11 +12,11 @@ headers = {
     'Authorization': f"Bearer {os.getenv('BEARER_TOKEN')}"
 }
 
-def get_job_ids():
+def get_job_ids(employment_type, industry, country):
     payload = json.dumps({
-        "employment_type": "Internship OR Part-time OR Contract",
-        "industry": "(Information Technology & Services) OR Telecommunications OR Internet OR Accounting OR Nanotechnology OR (Computer Hardware) OR (Computer Software) OR (Computer & Network Security) OR (Information Services) OR (Computer Networking) OR (Computer Games)",
-        "country": "(United Kingdom)",
+        "employment_type": employment_type,
+        "industry": industry,
+        "country": country,
         "application_active": "True",
         "deleted": "False"
     })
@@ -44,10 +44,3 @@ def get_job_details(job_id):
         print("Error decoding JSON response:")
         print(response.text)
         return {}
-
-# Example usage
-job_ids = get_job_ids()
-if job_ids:
-    print(get_job_details(job_ids[0]))
-else:
-    print("No job IDs found.")

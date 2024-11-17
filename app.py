@@ -9,6 +9,7 @@ import fitz
 import uuid
 from JobAPI import get_job_ids, get_job_details
 import re
+import json
 
 load_dotenv() 
 
@@ -45,16 +46,19 @@ def analyze_cv_with_groq(images):
             "content": [
                 {"type": "text", "text": """
                  
-            Please analyze this CV page and provide a professional summary with the following structure Format the output with simple headings and indentation, without any asterisks or special characters:
+            Please analyze this CV page and provide a professional summary with the following structure Format the output with simple headings and indentation:
 
             Professional Summary:
                 {Background and overview}
+                 
+            Career Path:
+                {Career trajectory analysis}
 
             Key Strengths:
                 {Top skills and attributes}
-                
-            Career Path:
-                {Career trajectory analysis}
+                 
+            Weakness:
+                {Areas to improve on for the Career Path, and potential resources}
                 
             Conclusion:
                 {Final assessment}
@@ -73,21 +77,47 @@ def analyze_cv_with_groq(images):
     chat_completion = groq_client.chat.completions.create(
         messages=messages,
         model="llama-3.2-90b-vision-preview",
-        temperature = 1
+        temperature = 0.1
         #response_format={"type": "json_object"},
     )
     
     summary = chat_completion.choices[0].message.content
     
-    # Convert the summary to HTML format
-    summary_html = summary.replace("**Professional Summary:**", "<h3>Professional Summary:</h3><p>")
-    summary_html = summary_html.replace("**Key Strengths:**", "</p><h3>Key Strengths:</h3><ul>")
-    summary_html = summary_html.replace("**Career Path:**", "</ul><h3>Career Path:</h3><p>")
-    summary_html = summary_html.replace("**Conclusion:**", "</p><h3>Conclusion:</h3><p>")
-    summary_html = summary_html.replace("* ", "<li>").replace("*", "</li>")
-    summary_html += "</p>"
-
+      # Convert the summary to HTML format using regular expressions
+    summary_html = summary.replace("**Professional Summary:**", "<h3>Professional Summary:</h3>")
+    summary_html = re.sub(r'\*\*(.*?)\*\*', r'<h3>\1</h3>', summary_html)
+    summary_html = re.sub(r'\* (.*?)\n', r'<li>\1</li>', summary_html)
+    summary_html = re.sub(r'(<li>.*?</li>)', r'<ul>\1</ul>', summary_html, flags=re.DOTALL)
     return summary_html
+
+
+
+def conditions(images):
+    """Analyze CV images using Groq's vision model"""
+    messages = []
+    for idx, img_base64 in enumerate(images):
+        messages.append({
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "JSON object of 'employment_type', 'industry', 'country': Choose employment type based on the resume, with the following option, output two employment type that best suit the resume separated by OR : Full-time, Part-time, Contract, Internship. output ONLY the name of the country IN PARENTHESES, no abbreviation the applicant will be applying to. Choose employment type based on the resume, with the following option, output 3 industry that best suit the resume and MUST BE separated by OR with parentheses around each options:Information Technology & Services, Internet, Computer Hardware, Computer Software, Computer & Network Security, Information Services, Computer Networking, Computer Games"},
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{img_base64}",
+                    },
+                },
+            ],
+            
+        })
+
+    chat_completion = groq_client.chat.completions.create(
+        messages=messages,
+        model="llama-3.2-90b-vision-preview",
+        temperature=0.1,
+        response_format={"type": "json_object"}
+    )
+    
+    return chat_completion.choices[0].message.content
 
 @app.route('/')
 def index():
@@ -129,6 +159,7 @@ def upload_pdf():
             images = pdf_to_images(temp_path)
             
             summary = analyze_cv_with_groq(images)
+            job_conditions = conditions(images)
             #summary = analyze_cv_with_groq(images)
             
             image_path = os.path.join(TEMP_FOLDER, f"{upload_id}.txt")
@@ -137,6 +168,7 @@ def upload_pdf():
             
             session['upload_id'] = upload_id
             session['cv_summary'] = summary
+            session['job_conditions'] = job_conditions
             
             return jsonify({'status': 'success', 'redirect': '/cv'})
             
@@ -164,7 +196,20 @@ def job_listings():
 
 @app.route('/api/job-listings')
 def api_job_listings():
-    job_ids = get_job_ids()
+    job_conditions_str = session.get('job_conditions')
+
+    if not job_conditions_str:
+        return jsonify({'error': 'No job conditions found'}), 400
+
+    job_conditions = json.loads(job_conditions_str)
+
+    # Extract values from the JSON object
+    employment_type = job_conditions.get('employment_type')
+    country = job_conditions.get('country')
+    industry = job_conditions.get('industry')
+
+    # Call get_job_ids with the extracted values
+    job_ids = get_job_ids(employment_type, industry, country)
     limited_job_ids = job_ids[:2] 
     job_details = [get_job_details(job_id) for job_id in limited_job_ids]
 
